@@ -8,8 +8,8 @@
 > npm install
 ```
 
-Replace `BOT_TOKEN` in [index.js](https://github.com/Pharuxtan/discordbot/blob/master/index.js#L23) \
-Replace `OWNER_ID` in [commands/restart.js](https://github.com/Pharuxtan/discordbot/blob/master/commands/restart.js#L7)
+Replace `BOT_TOKEN` by your bot token in [index.js](https://github.com/Pharuxtan/discordbot/blob/master/index.js#L23) \
+Replace `OWNER_ID` by your user id in [commands/restart.js](https://github.com/Pharuxtan/discordbot/blob/master/commands/restart.js#L7)
 
 ```console
 > node index.js
