@@ -17,7 +17,7 @@ Replace `OWNER_ID` at [commands/restart.js](https://github.com/Pharuxtan/discord
 
 #Commands
 
-!test => `send test ok` \
+!test => send `test ok` \
 !reboot :
  - exit => exit the program (restart if running on `pm2` or `forever`)
  - events => reload all `events` folder
