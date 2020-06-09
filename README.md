@@ -1,6 +1,6 @@
-## Pharuxtan Discord Bot System
+# Pharuxtan Discord Bot System 
 
-#How to launch
+## How to launch
 
 ```console
 > git clone https://github.com/Pharuxtan/discordbot.git
@@ -15,7 +15,7 @@ Replace `OWNER_ID` at [commands/restart.js](https://github.com/Pharuxtan/discord
 > node index.js
 ```
 
-#Commands
+## Commands
 
 !test => send `test ok` \
 !reboot :
