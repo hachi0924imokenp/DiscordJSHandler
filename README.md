@@ -1,4 +1,4 @@
-# Pharuxtan Discord Bot System 
+# Pharuxtan Discord Bot Handler
 
 ## How to launch
 
