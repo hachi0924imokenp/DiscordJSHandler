@@ -17,6 +17,6 @@ module.exports = (globalVariables) => {
     }
     return files_;
   }
-  if(!globalVariables.prefix) globalVariables.prefix = "!";
   if(!globalVariables.listeners) globalVariables.listeners = [];
+  globalVariables.prefix = "!";
 }
