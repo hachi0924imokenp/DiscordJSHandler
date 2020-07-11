@@ -3,7 +3,7 @@
 ## How to launch
 
 ```console
-> git clone https://github.com/Pharuxtan/discordbot.git
+> git clone https://github.com/Pharuxtan/DiscordJSHandler.git
 > cd discordbot
 > npm install
 ```
