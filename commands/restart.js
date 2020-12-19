@@ -25,6 +25,13 @@ module.exports = (globalVariables) => {
       let file = __dirname+"/../initGlobalVariable.js";
       delete require.cache[require.resolve(file)];
       require(file)(globalVariables);
+    } else if(message.content.split(" ")[1] == "slashes"){
+      msg = await message.channel.send(`Restarting Slashes Commands...`);
+      let commands = getFiles(__dirname+"/../slashes/commands").filter(f => f.endsWith(".js"));
+      for(let i in commands){
+        delete require.cache[require.resolve(commands[i])];
+        require(commands[i]);
+      }
     } else {
       msg = await message.channel.send(`Restarting Commands...`);
       let commands = getFiles(__dirname).filter(f => f.endsWith(".js"));

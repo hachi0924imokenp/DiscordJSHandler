@@ -6,6 +6,8 @@ Object.keys(globalVariables).map(variable => {
 
 client.setMaxListeners(Infinity);
 
+require("./slashes/slashes.js")(globalVariables);
+
 //preload commands
 if(fs.existsSync(__dirname+"/commands")){
     let commands = getFiles(__dirname+"/commands").filter(f => f.endsWith(".js"));
