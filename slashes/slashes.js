@@ -28,13 +28,16 @@ module.exports = (globalVariables) => {
       this.guild = client.guilds.cache.get(interaction.guild_id);
       this.channel = this.guild.channels.cache.get(interaction.channel_id);
       this.member = await this.guild.members.fetch(interaction.member.user.id);
-      this.content = this.command;
+      let content = this.command;
       function fetchOptions(options){
-        if(options.value) this.content += ` ${options.value}`;
-        else this.content += ` ${options.name}`;
-        if(options.options) fetchOptions(options.options);
+        for(let option of options){
+          if(option.value) content += ` ${option.value}`;
+          else content += ` ${option.name}`;
+          if(option.options) fetchOptions(option.options);
+        }
       }
       if(interaction.data.options) fetchOptions(interaction.data.options);
+      this.content = content;
       return this;
     }
 

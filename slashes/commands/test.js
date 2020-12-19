@@ -4,7 +4,6 @@ module.exports = (globalVariables) => {
   });
   
   async function command(slash){
-    console.log(slash.content);
     slash.send("test ok");
   }
   
