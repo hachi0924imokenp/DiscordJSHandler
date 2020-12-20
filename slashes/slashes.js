@@ -45,7 +45,6 @@ module.exports = (globalVariables) => {
     }
 
     async callMessageEvent(){
-      let message = require(__dirname+"/../events/message.js")(globalVariables);
       let send = this.channel.send;
       let self = this;
       this.channel.send = async (...args) => {
@@ -53,7 +52,7 @@ module.exports = (globalVariables) => {
         this.channel.send = send;
         return msg;
       }
-      message(this);
+      client.emit("message", this);
     }
 
     async send(content = "\u200B", embeds = [], allowed_mentions = {}, tts = false){
