@@ -46,9 +46,10 @@ module.exports = (globalVariables) => {
 
     async callMessageEvent(){
       let message = require(__dirname+"/../events/message.js")(globalVariables);
-      let send = this.channel.send;
+      let send = this.channel.send
+      let self = this;
       this.channel.send = async (...args) => {
-        let msg = await this.send(...args);
+        let msg = await self.send(...args);
         this.channel.send = send;
         return msg;
       }
