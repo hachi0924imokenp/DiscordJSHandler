@@ -46,7 +46,12 @@ module.exports = (globalVariables) => {
 
     async callMessageEvent(){
       let message = require(__dirname+"/../events/message.js")(globalVariables);
-      (await this.send("\u200B")).delete();
+      let send = this.channel.send;
+      this.channel.send = async (...args) => {
+        let msg = await this.send(...args);
+        this.channel.send = send;
+        return msg;
+      }
       message(this);
     }
 
@@ -57,6 +62,10 @@ module.exports = (globalVariables) => {
         if(content.tts) tts = content.tts
         if(content.allowed_mentions) allowed_mentions = content.allowed_mentions
         if(content.embeds) embeds = content.embeds
+        if(content.embed){
+          if(Array.isArray(embeds)) embeds.push(content.embed);
+          else embeds = [content.embed];
+        }
         if(content.content) content = content.content
         else content = "";
       } else if(typeof embeds == "object"){
@@ -64,6 +73,10 @@ module.exports = (globalVariables) => {
         if(content.allowed_mentions) allowed_mentions = content.allowed_mentions
         if(content.embeds) embeds = content.embeds
         else embeds = [];
+        if(content.embed){
+          if(Array.isArray(embeds)) embeds.push(content.embed);
+          else embeds = [content.embed];
+        }
       } if(embeds instanceof Discord.MessageEmbed){
         embeds = [embeds];
       }
