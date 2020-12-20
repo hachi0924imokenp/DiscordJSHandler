@@ -21,16 +21,18 @@ module.exports = (globalVariables) => {
   });
 
   class SlashAPI {
-    slash = true;
-
     async init(interaction){
+      this.slash = true;
       this.interaction = interaction;
       this.command = interaction.data.name;
       this.options = interaction.data.options;
-      this.guild = client.guilds.cache.get(interaction.guild_id);
-      this.channel = this.guild.channels.cache.get(interaction.channel_id);
-      this.member = await this.guild.members.fetch(interaction.member.user.id);
-      this.author = this.member.user;
+      if(client.guilds.cache.get(interaction.guild_id)){
+        this.bot_scope = true;
+        this.guild = client.guilds.cache.get(interaction.guild_id);
+        this.channel = this.guild.channels.cache.get(interaction.channel_id);
+        this.member = await this.guild.members.fetch(interaction.member.user.id);
+        this.author = this.member.user;
+      } else this.bot_scope = false;
       let content = this.command;
       function fetchOptions(options){
         for(let option of options){
@@ -45,14 +47,16 @@ module.exports = (globalVariables) => {
     }
 
     async callMessageEvent(){
-      let send = this.channel.send;
-      let self = this;
-      this.channel.send = async (...args) => {
-        let msg = await self.send(...args);
-        this.channel.send = send;
-        return msg;
+      if(this.bot_scope){
+        let send = this.channel.send;
+        let self = this;
+        this.channel.send = async (...args) => {
+          let msg = await self.send(...args);
+          this.channel.send = send;
+          return msg;
+        }
+        client.emit("message", this);
       }
-      client.emit("message", this);
     }
 
     async send(content = "\u200B", embeds = [], allowed_mentions = {}, tts = false){
@@ -93,7 +97,7 @@ module.exports = (globalVariables) => {
         type: 4,
         data
       }});
-      return this.channel.awaitMessages(m => m.author.id == client.user.id, {max: 1}).then(m => m.first());
+      if(this.bot_scope) return this.channel.awaitMessages(m => m.author.id == client.user.id, {max: 1}).then(m => m.first());
     }
   }
 }
