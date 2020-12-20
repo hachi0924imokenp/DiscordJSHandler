@@ -46,7 +46,7 @@ module.exports = (globalVariables) => {
 
     async callMessageEvent(){
       let message = require(__dirname+"/../events/message.js")(globalVariables);
-      let send = this.channel.send
+      let send = this.channel.send;
       let self = this;
       this.channel.send = async (...args) => {
         let msg = await self.send(...args);
@@ -56,39 +56,43 @@ module.exports = (globalVariables) => {
       message(this);
     }
 
-    async send(content = "", embeds = [], allowed_mentions = {}, tts = false){
+    async send(content = "\u200B", embeds = [], allowed_mentions = {}, tts = false){
+      let data = {content,embeds,allowed_mentions,tts};
       if(embeds instanceof Discord.MessageEmbed){
-        embeds = [embeds];
+        data.embeds = [embeds];
+      } if(content instanceof Discord.MessageEmbed){
+        if(Array.isArray(data.embeds)) data.embeds.push(content);
+        else data.embeds = [content];
+        data.content = "\u200B";
       } if(typeof content == "object"){
-        if(content.tts) tts = content.tts
-        if(content.allowed_mentions) allowed_mentions = content.allowed_mentions
-        if(content.embeds) embeds = content.embeds
+        if(content.tts) data.tts = content.tts
+        if(content.allowed_mentions) data.allowed_mentions = content.allowed_mentions
+        if(content.embeds) data.embeds = content.embeds
         if(content.embed){
-          if(Array.isArray(embeds)) embeds.push(content.embed);
-          else embeds = [content.embed];
+          if(Array.isArray(data.embeds)) data.embeds.push(content.embed);
+          else data.embeds = [content.embed];
         }
-        if(content.content) content = content.content
-        else content = "";
+        if(content.content) data.content = content.content
+        else data.content = "\u200B";
       } else if(typeof embeds == "object"){
-        if(content.tts) tts = content.tts
-        if(content.allowed_mentions) allowed_mentions = content.allowed_mentions
-        if(content.embeds) embeds = content.embeds
-        else embeds = [];
+        if(content.tts) data.tts = content.tts
+        if(content.allowed_mentions) data.allowed_mentions = content.allowed_mentions
+        if(content.embeds) data.embeds = content.embeds
+        else data.embeds = [];
         if(content.embed){
-          if(Array.isArray(embeds)) embeds.push(content.embed);
-          else embeds = [content.embed];
+          if(Array.isArray(data.embeds)) data.embeds.push(content.embed);
+          else data.embeds = [content.embed];
         }
-      } if(embeds instanceof Discord.MessageEmbed){
-        embeds = [embeds];
+      } if(data.embeds instanceof Discord.MessageEmbed){
+        data.embeds = [data.embeds];
+      } if(data.content instanceof Discord.MessageEmbed){
+        if(Array.isArray(data.embeds)) data.embeds.push(data.content);
+        else data.embeds = [data.content];
+        data.content = "\u200B";
       }
       client.api.interactions(this.interaction.id, this.interaction.token).callback.post({data: {
         type: 4,
-        data: {
-          content,
-          embeds,
-          allowed_mentions,
-          tts
-        }
+        data
       }});
       return this.channel.awaitMessages(m => m.author.id == client.user.id, {max: 1}).then(m => m.first());
     }
