@@ -93,6 +93,7 @@ module.exports = (globalVariables) => {
         else data.embeds = [data.content];
         data.content = "\u200B";
       }
+      if(data.content == "") data.content = "\u200B";
       client.api.interactions(this.interaction.id, this.interaction.token).callback.post({data: {
         type: 4,
         data
