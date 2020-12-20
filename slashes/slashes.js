@@ -21,6 +21,8 @@ module.exports = (globalVariables) => {
   });
 
   class SlashAPI {
+    slash = true;
+
     async init(interaction){
       this.interaction = interaction;
       this.command = interaction.data.name;
@@ -28,6 +30,7 @@ module.exports = (globalVariables) => {
       this.guild = client.guilds.cache.get(interaction.guild_id);
       this.channel = this.guild.channels.cache.get(interaction.channel_id);
       this.member = await this.guild.members.fetch(interaction.member.user.id);
+      this.author = this.member.user;
       let content = this.command;
       function fetchOptions(options){
         for(let option of options){
@@ -41,7 +44,13 @@ module.exports = (globalVariables) => {
       return this;
     }
 
-    send(content = "", embeds = [], allowed_mentions = {}, tts = false){
+    async callMessageEvent(){
+      let message = require(__dirname+"/../events/message.js")(globalVariables);
+      (await this.send("\u200B")).delete();
+      message(this);
+    }
+
+    async send(content = "", embeds = [], allowed_mentions = {}, tts = false){
       if(embeds instanceof Discord.MessageEmbed){
         embeds = [embeds];
       } if(typeof content == "object"){
@@ -57,7 +66,7 @@ module.exports = (globalVariables) => {
         else embeds = [];
       } if(embeds instanceof Discord.MessageEmbed){
         embeds = [embeds];
-      } 
+      }
       client.api.interactions(this.interaction.id, this.interaction.token).callback.post({data: {
         type: 4,
         data: {
@@ -67,6 +76,7 @@ module.exports = (globalVariables) => {
           tts
         }
       }});
+      return this.channel.awaitMessages(m => m.author.id == client.user.id, {max: 1}).then(m => m.first());
     }
   }
 }

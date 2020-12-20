@@ -4,6 +4,7 @@ module.exports = (globalVariables) => {
   });
   
   function event(message){
+    if(message.slash) message.content = prefix + message.content;
     let commands = getFiles(__dirname+"/../commands").filter(f => f.endsWith(".js"));
     for(let i=0; i<commands.length; i++){
       let command = require(commands[i])(globalVariables);

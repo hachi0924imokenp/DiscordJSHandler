@@ -4,7 +4,7 @@ module.exports = (globalVariables) => {
   });
   
   async function command(slash){
-    slash.send("test ok");
+    slash.callMessageEvent();
   }
   
   command.options = {
