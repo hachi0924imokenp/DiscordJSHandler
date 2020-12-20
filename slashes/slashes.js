@@ -78,13 +78,13 @@ module.exports = (globalVariables) => {
         if(content.content) data.content = content.content
         else data.content = "\u200B";
       } else if(typeof embeds == "object"){
-        if(content.tts) data.tts = content.tts
-        if(content.allowed_mentions) data.allowed_mentions = content.allowed_mentions
-        if(content.embeds) data.embeds = content.embeds
+        if(embeds.tts) data.tts = embeds.tts
+        if(embeds.allowed_mentions) data.allowed_mentions = embeds.allowed_mentions
+        if(embeds.embeds) data.embeds = embeds.embeds
         else data.embeds = [];
-        if(content.embed){
-          if(Array.isArray(data.embeds)) data.embeds.push(content.embed);
-          else data.embeds = [content.embed];
+        if(embeds.embed){
+          if(Array.isArray(data.embeds)) data.embeds.push(embeds.embed);
+          else data.embeds = [embeds.embed];
         }
       } if(data.embeds instanceof Discord.MessageEmbed){
         data.embeds = [data.embeds];
