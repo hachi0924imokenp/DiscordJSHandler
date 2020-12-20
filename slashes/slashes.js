@@ -26,7 +26,7 @@ module.exports = (globalVariables) => {
     async init(interaction){
       this.interaction = interaction;
       this.command = interaction.data.name;
-      this.options = interaction.options;
+      this.options = interaction.data.options;
       this.guild = client.guilds.cache.get(interaction.guild_id);
       this.channel = this.guild.channels.cache.get(interaction.channel_id);
       this.member = await this.guild.members.fetch(interaction.member.user.id);
