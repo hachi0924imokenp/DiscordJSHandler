@@ -59,7 +59,7 @@ module.exports = (globalVariables) => {
       }
     }
 
-    async send(content = "\u200B", embeds = [], allowed_mentions = {}, tts = false){
+    parseMessage(content = "\u200B", embeds = [], allowed_mentions = {}, tts = false){
       let data = {content,embeds,allowed_mentions,tts};
       if(embeds instanceof Discord.MessageEmbed){
         data.embeds = [embeds];
@@ -94,11 +94,43 @@ module.exports = (globalVariables) => {
         data.content = "\u200B";
       }
       if(data.content == "") data.content = "\u200B";
-      client.api.interactions(this.interaction.id, this.interaction.token).callback.post({data: {
+      return data;
+    }
+
+    async send(...args){
+      let d = this.parseMessage(...args);
+      await client.api.interactions(this.interaction.id, this.interaction.token).callback.post({data: {
         type: 4,
-        data
+        data: d
       }});
-      if(this.bot_scope) return this.channel.awaitMessages(m => m.author.id == client.user.id, {max: 1}).then(m => m.first());
+      let {parseMessage, interaction} = this;
+      let self = this;
+      async function createMessage(msg){
+        if(self.bot_scope){
+          msg.guild = self.guild;
+          msg.channel = self.channel;
+          msg.member = await self.guild.members.fetch(client.user.id);
+          msg.author = client.user;
+        }
+        Object.assign(msg, {
+          edit(...args){
+            let data = parseMessage(...args);
+            client.api.webhooks(client.user.id, interaction.token).messages[msg.id].patch({data});
+          },
+          delete(){
+            client.api.webhooks(client.user.id, interaction.token).messages[msg.id].delete();
+          }
+        });
+        return msg;
+      }
+      let msg = await client.api.webhooks(client.user.id, interaction.token).messages["@original"].get();
+      msg = await createMessage(msg);
+      msg.followup = async function followup(...args){
+        let data = parseMessage(...args);
+        let m = await client.api.webhooks(client.user.id, interaction.token).post({data});
+        return await createMessage(m);
+      }
+      return msg;
     }
   }
 }
