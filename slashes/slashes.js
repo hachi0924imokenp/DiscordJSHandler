@@ -117,8 +117,14 @@ module.exports = (globalVariables) => {
             let data = parseMessage(...args);
             client.api.webhooks(client.user.id, interaction.token).messages[msg.id].patch({data});
           },
-          delete(){
-            client.api.webhooks(client.user.id, interaction.token).messages[msg.id].delete();
+          delete(options){
+            if(options.timeout){
+              setTimeout(() => {
+                client.api.webhooks(client.user.id, interaction.token).messages[msg.id].delete();
+              }, options.timeout);
+            } else {
+              client.api.webhooks(client.user.id, interaction.token).messages[msg.id].delete();
+            }
           }
         });
         return msg;
