@@ -26,13 +26,21 @@ module.exports = (globalVariables) => {
       this.interaction = interaction;
       this.command = interaction.data.name;
       this.options = interaction.data.options;
-      if(client.guilds.cache.get(interaction.guild_id)){
+      if(interaction.user){ // dm
+        this.dm = true;
+        this.channel = await client.channels.fetch(interaction.channel_id);
+        this.author = await client.users.fetch(interaction.user.id);
         this.bot_scope = true;
-        this.guild = client.guilds.cache.get(interaction.guild_id);
-        this.channel = this.guild.channels.cache.get(interaction.channel_id);
-        this.member = await this.guild.members.fetch(interaction.member.user.id);
-        this.author = this.member.user;
-      } else this.bot_scope = false;
+      } else { // guild
+        this.dm = false;
+        if(client.guilds.cache.get(interaction.guild_id)){
+          this.bot_scope = true;
+          this.guild = client.guilds.cache.get(interaction.guild_id);
+          this.channel = this.guild.channels.cache.get(interaction.channel_id);
+          this.member = await this.guild.members.fetch(interaction.member.user.id);
+          this.author = this.member.user;
+        } else this.bot_scope = false;
+      }
       let content = this.command;
       function fetchOptions(options){
         for(let option of options){
@@ -106,10 +114,13 @@ module.exports = (globalVariables) => {
       let {parseMessage, interaction} = this;
       let self = this;
       async function createMessage(msg){
-        if(self.bot_scope){
+        if(self.bot_scope && !self.dm){
           msg.guild = self.guild;
           msg.channel = self.channel;
           msg.member = await self.guild.members.fetch(client.user.id);
+          msg.author = client.user;
+        } else if(self.dm){
+          msg.channel = self.channel;
           msg.author = client.user;
         }
         Object.assign(msg, {
