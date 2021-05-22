@@ -8,7 +8,7 @@ module.exports = (globalVariables) => {
     let commands = getFiles(__dirname+"/commands").filter(f => f.endsWith(".js"));
     for(let i=0; i<commands.length; i++) require(commands[i]);
   }
-  
+
   client.ws.on('INTERACTION_CREATE', async interaction => {
     let slash = await new SlashAPI().init(interaction);
     let commands = getFiles(__dirname+"/commands").filter(f => f.endsWith(".js"));
@@ -64,6 +64,8 @@ module.exports = (globalVariables) => {
           return msg;
         }
         client.emit("message", this);
+      } else {
+        this.send("The command `"+this.command+"` isn't supported without the scope bot, you can invite the bot with the scope bot here: <https://discord.com/oauth2/authorize?client_id=572002884552491008&permissions=34880&scope=applications.commands%20bot%20applications.commands.update>")
       }
     }
 
@@ -114,15 +116,7 @@ module.exports = (globalVariables) => {
       let {parseMessage, interaction} = this;
       let self = this;
       async function createMessage(msg){
-        if(self.bot_scope && !self.dm){
-          msg.guild = self.guild;
-          msg.channel = self.channel;
-          msg.member = await self.guild.members.fetch(client.user.id);
-          msg.author = client.user;
-        } else if(self.dm){
-          msg.channel = self.channel;
-          msg.author = client.user;
-        }
+        if(self.bot_scope) msg = new Discord.Message(client, msg, self.channel);
         Object.assign(msg, {
           edit(...args){
             let data = parseMessage(...args);
