@@ -64,8 +64,6 @@ module.exports = (globalVariables) => {
           return msg;
         }
         client.emit("message", this);
-      } else {
-        this.send("The command `"+this.command+"` isn't supported without the scope bot, you can invite the bot with the scope bot here: <https://discord.com/oauth2/authorize?client_id=572002884552491008&permissions=34880&scope=applications.commands%20bot%20applications.commands.update>")
       }
     }
 
